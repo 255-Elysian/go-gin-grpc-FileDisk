@@ -1,0 +1,81 @@
+server:
+  port: ":4000"
+  version: "1.0"
+
+mysql:
+  driverName: "mysql"
+  host: "localhost"
+  port: "3306"
+  database: "grpc-todolist-disk"
+  username: "root"
+  password: "123456"
+  charset: "utf8mb4"
+
+redis:
+  username: "default"
+  address: "localhost:6379"
+  password: ""
+  # 启动：redis-server start
+  # 停止：sudo systemctl stop redis
+
+etcd:
+  Endpoints:
+    - "localhost:2379"
+  # 启动：etcd
+  # 关闭：sudo pkill etcd
+
+
+services:
+  gateway:
+    name: "gateway"
+    loadBalance: "true"
+    addr:
+      - "127.0.0.1:10001"
+  user:
+    name: "user"
+    loadBalance: "false"
+    addr:
+      - "127.0.0.1:10002"
+  task:
+    name: "task"
+    loadBalance: "false"
+    addr:
+      - "127.0.0.1:10003"
+  files:
+    name: "files"
+    loadBalance: "false"
+    addr:
+      - "127.0.0.1:10004"
+
+domain:
+  user:
+    name: "user"
+  task:
+    name: "task"
+  files:
+    name: "files"
+
+token:
+  shortDuration: "30"   # token 有效期（分钟），多久无操作就退出
+  longDuration: "1440"  # 长 token，多久必须重新登陆
+
+kafka:
+  topic: "user_cache"
+  broker:
+    - "localhost:9092"
+  group_id: "my_group"
+
+  # /opt/kafka/bin
+  # 查看所有主题
+  # ./kafka-topics.sh --list --bootstrap-server localhost:9092
+  # 创建一个名为 user_cache 的主题
+  # ./kafka-topics.sh --bootstrap-server localhost:9092 --create --topic user_cache
+  # 删除一个名为 my-topic 的主题
+  # ./kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic my-topic
+
+  # 终端 1：启动 Zookeeper
+  # bin/zookeeper-server-start.sh config/zookeeper.properties
+  # 终端 2：启动 Kafka
+  # bin/kafka-server-start.sh config/server.properties
+  # 停止
+  # bin/kafka-server-stop.sh bin/zookeeper-server-stop.sh

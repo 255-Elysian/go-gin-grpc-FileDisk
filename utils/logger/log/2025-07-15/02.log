@@ -1,0 +1,5 @@
+{"level":"info","ts":1752518434.2756066,"msg":"/api/v1/ping","status":200,"method":"GET","path":"/api/v1/ping","query":"","cost":"0s","ip":"::1","user-agent":"PostmanRuntime/7.44.1","errors":"","latency":0}
+{"level":"info","ts":1752518440.6513648,"msg":"/api/v1/user/register","status":500,"method":"POST","path":"/api/v1/user/register","query":"","cost":"70.5581ms","ip":"::1","user-agent":"PostmanRuntime/7.44.1","errors":"","latency":0.0705581}
+{"level":"info","ts":1752518734.1278586,"msg":"/api/v1/user/register","status":500,"method":"POST","path":"/api/v1/user/register","query":"","cost":"629µs","ip":"::1","user-agent":"PostmanRuntime/7.44.1","errors":"","latency":0.000629}
+{"level":"info","ts":1752519606.0768106,"msg":"/api/v1/ping","status":200,"method":"GET","path":"/api/v1/ping","query":"","cost":"0s","ip":"::1","user-agent":"PostmanRuntime/7.44.1","errors":"","latency":0}
+{"level":"info","ts":1752519610.3209975,"msg":"/api/v1/user/register","status":500,"method":"POST","path":"/api/v1/user/register","query":"","cost":"0s","ip":"::1","user-agent":"PostmanRuntime/7.44.1","errors":"","latency":0}

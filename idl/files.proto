@@ -1,0 +1,133 @@
+syntax = "proto3";
+option go_package = "files/";
+
+message FileModel {
+  // @inject_tag: json:"file_id"
+  uint64 FileID = 1;
+  // @inject_tag: json:"user_id"
+  uint64 UserID = 2;
+  // @inject_tag: json:"file_name"
+  string FileName = 3;
+  // @inject_tag: json:"file_size"
+  int64 FileSize = 4;
+  // @inject_tag: json:"bucket"
+  string Bucket = 5;        // 存储桶名称（如 MinIO 的 bucket）
+  // @inject_tag: json:"object_name"
+  string ObjectName = 6;    // 存储对象名（唯一标识）
+}
+
+// 文件上传（表单上传）
+message FileUploadRequest {
+  // @inject_tag: json:"user_id" form:"user_id"
+  uint64 UserID = 1;
+  // @inject_tag: json:"file_name" form:"file_name"
+  string Filename = 2;
+  // @inject_tag: json:"file_size"
+  int64 FileSize = 3;
+  // @inject_tag: json:"object_name"
+  string ObjectName = 4;
+}
+
+message FileUploadResponse {
+  // @inject_tag: json:"code" form:"code"
+  int64 Code = 1;
+  // @inject_tag: json:"msg" form:"msg"
+  string Msg = 2;
+  // @inject_tag: json:"object_url"
+  string ObjectUrl = 3;
+  // @inject_tag: json:"file_id" form:"file_id"
+  uint64 FileID = 4;
+}
+
+// 文件上传（二进制上传）
+message BigFileUploadRequest {
+  // @inject_tag: json:"user_id" form:"user_id"
+  uint64 UserID = 1;
+  // @inject_tag: json:"file_name" form:"file_name"
+  string Filename = 2;          // 文件名，仅首个分片携带
+  // @inject_tag: json:"file_size"
+  int64 FileSize = 3;
+  // @inject_tag: json:"object_name"
+  string ObjectName = 4;
+  // @inject_tag: json:"content" form:"content"
+  bytes Content = 5;            // 当前分片的数据
+  // @inject_tag: json:"is_last" form:"is_last"
+  bool IsLast = 6;            // 是否为最后一个分片
+}
+
+message BigFileUploadResponse {
+  // @inject_tag: json:"code" form:"code"
+  int64 Code = 1;
+  // @inject_tag: json:"msg" form:"msg"
+  string Msg = 2;
+  // @inject_tag: json:"object_url"
+  string ObjectUrl = 3;
+  // @inject_tag: json:"file_id" form:"file_id"
+  uint64 FileID = 4;
+}
+
+// 文件删除
+message FileDeleteRequest {
+  // @inject_tag: json:"file_id" form:"file_id"
+  uint64 FileID = 1;
+  // @inject_tag: json:"user_id" form:"user_id"
+  uint64 UserID = 2;
+}
+
+// 文件列表请求与响应
+message FileListRequest {
+  // @inject_tag: json:"user_id" form:"user_id"
+  uint64 UserID = 1;
+  // @inject_tag: json:"page" form:"page"
+  int32 Page = 2;
+  // @inject_tag: json:"page_size" form:"page_size"
+  int32 PageSize = 3;
+}
+
+message FileListResponse {
+  // @inject_tag: json:"code"
+  int32 Code = 1;
+  // @inject_tag: json:"msg"
+  string Msg = 2;
+  // @inject_tag: json:"files"
+  repeated FileModel Files = 3;
+  // @inject_tag: json:"total"
+  int64 Total = 4;
+}
+
+// 下载请求与响应（返回预签名URL或本地路径）
+message FileDownloadRequest {
+  // @inject_tag: json:"file_id" form:"file_id"
+  uint64 FileID = 1;
+  // @inject_tag: json:"file_name" form:"file_name"
+  string Filename = 2;
+  // @inject_tag: json:"user_id" form:"user_id"
+  uint64 UserID = 3;
+}
+
+message FileDownloadResponse {
+  // @inject_tag: json:"code"
+  int32 Code = 1;
+  // @inject_tag: json:"msg"
+  string Msg = 2;
+  // @inject_tag: json:"download_url"
+  string DownloadUrl = 3;
+  // @inject_tag: json:"file_name" form:"file_name"
+  string Filename = 4;
+}
+
+message FileCommonResponse {
+  // @inject_tag: json:"code" form:"code"
+  int64 Code = 1;
+  // @inject_tag: json:"msg" form:"msg"
+  string Msg = 2;
+}
+
+
+service FilesService {
+  rpc FileUpload(FileUploadRequest) returns (FileUploadResponse);
+  rpc BigFileUpload(stream BigFileUploadRequest) returns(BigFileUploadResponse);
+  rpc FileDelete(FileDeleteRequest) returns (FileCommonResponse);
+  rpc FileList(FileListRequest) returns (FileListResponse);
+  rpc FileDownload(FileDownloadRequest) returns (FileDownloadResponse);
+}

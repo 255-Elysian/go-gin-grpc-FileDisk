@@ -1,0 +1,3 @@
+{"level":"info","ts":1752844432.0905077,"msg":"/api/v1/ping","status":200,"method":"GET","path":"/api/v1/ping","query":"","cost":"0s","ip":"::1","user-agent":"PostmanRuntime/7.44.1","errors":"","latency":0}
+{"level":"info","ts":1752844451.2586102,"msg":"/api/v1/file_upload","status":400,"method":"POST","path":"/api/v1/file_upload","query":"","cost":"2.1013ms","ip":"::1","user-agent":"PostmanRuntime/7.44.1","errors":"","latency":0.0021013}
+{"level":"info","ts":1752844556.8996944,"msg":"/api/v1/file_upload","status":400,"method":"POST","path":"/api/v1/file_upload","query":"","cost":"32.4466ms","ip":"::1","user-agent":"PostmanRuntime/7.44.1","errors":"","latency":0.0324466}
