@@ -70,6 +70,8 @@ kafka:
   # ./kafka-topics.sh --list --bootstrap-server localhost:9092
   # 创建一个名为 user_cache 的主题
   # ./kafka-topics.sh --bootstrap-server localhost:9092 --create --topic user_cache
+  # 查看指定 topic 中的消息（推荐调试用）
+  # ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic user_cache --from-beginning
   # 删除一个名为 my-topic 的主题
   # ./kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic my-topic
 
