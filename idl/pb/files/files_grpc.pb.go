@@ -19,11 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	FilesService_FileUpload_FullMethodName    = "/FilesService/FileUpload"
-	FilesService_BigFileUpload_FullMethodName = "/FilesService/BigFileUpload"
-	FilesService_FileDelete_FullMethodName    = "/FilesService/FileDelete"
-	FilesService_FileList_FullMethodName      = "/FilesService/FileList"
-	FilesService_FileDownload_FullMethodName  = "/FilesService/FileDownload"
+	FilesService_FileUpload_FullMethodName      = "/FilesService/FileUpload"
+	FilesService_BigFileUpload_FullMethodName   = "/FilesService/BigFileUpload"
+	FilesService_FileDelete_FullMethodName      = "/FilesService/FileDelete"
+	FilesService_FileList_FullMethodName        = "/FilesService/FileList"
+	FilesService_FileDownload_FullMethodName    = "/FilesService/FileDownload"
+	FilesService_CheckFileExists_FullMethodName = "/FilesService/CheckFileExists"
 )
 
 // FilesServiceClient is the client API for FilesService service.
@@ -35,6 +36,7 @@ type FilesServiceClient interface {
 	FileDelete(ctx context.Context, in *FileDeleteRequest, opts ...grpc.CallOption) (*FileCommonResponse, error)
 	FileList(ctx context.Context, in *FileListRequest, opts ...grpc.CallOption) (*FileListResponse, error)
 	FileDownload(ctx context.Context, in *FileDownloadRequest, opts ...grpc.CallOption) (*FileDownloadResponse, error)
+	CheckFileExists(ctx context.Context, in *CheckFileRequest, opts ...grpc.CallOption) (*CheckFileResponse, error)
 }
 
 type filesServiceClient struct {
@@ -98,6 +100,16 @@ func (c *filesServiceClient) FileDownload(ctx context.Context, in *FileDownloadR
 	return out, nil
 }
 
+func (c *filesServiceClient) CheckFileExists(ctx context.Context, in *CheckFileRequest, opts ...grpc.CallOption) (*CheckFileResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CheckFileResponse)
+	err := c.cc.Invoke(ctx, FilesService_CheckFileExists_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FilesServiceServer is the server API for FilesService service.
 // All implementations must embed UnimplementedFilesServiceServer
 // for forward compatibility.
@@ -107,6 +119,7 @@ type FilesServiceServer interface {
 	FileDelete(context.Context, *FileDeleteRequest) (*FileCommonResponse, error)
 	FileList(context.Context, *FileListRequest) (*FileListResponse, error)
 	FileDownload(context.Context, *FileDownloadRequest) (*FileDownloadResponse, error)
+	CheckFileExists(context.Context, *CheckFileRequest) (*CheckFileResponse, error)
 	mustEmbedUnimplementedFilesServiceServer()
 }
 
@@ -131,6 +144,9 @@ func (UnimplementedFilesServiceServer) FileList(context.Context, *FileListReques
 }
 func (UnimplementedFilesServiceServer) FileDownload(context.Context, *FileDownloadRequest) (*FileDownloadResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FileDownload not implemented")
+}
+func (UnimplementedFilesServiceServer) CheckFileExists(context.Context, *CheckFileRequest) (*CheckFileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckFileExists not implemented")
 }
 func (UnimplementedFilesServiceServer) mustEmbedUnimplementedFilesServiceServer() {}
 func (UnimplementedFilesServiceServer) testEmbeddedByValue()                      {}
@@ -232,6 +248,24 @@ func _FilesService_FileDownload_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FilesService_CheckFileExists_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckFileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FilesServiceServer).CheckFileExists(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FilesService_CheckFileExists_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FilesServiceServer).CheckFileExists(ctx, req.(*CheckFileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FilesService_ServiceDesc is the grpc.ServiceDesc for FilesService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -254,6 +288,10 @@ var FilesService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FileDownload",
 			Handler:    _FilesService_FileDownload_Handler,
+		},
+		{
+			MethodName: "CheckFileExists",
+			Handler:    _FilesService_CheckFileExists_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

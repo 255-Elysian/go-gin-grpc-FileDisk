@@ -121,7 +121,9 @@ type FileUploadRequest struct {
 	// @inject_tag: json:"file_size"
 	FileSize int64 `protobuf:"varint,3,opt,name=FileSize,proto3" json:"file_size"`
 	// @inject_tag: json:"object_name"
-	ObjectName    string `protobuf:"bytes,4,opt,name=ObjectName,proto3" json:"object_name"`
+	ObjectName string `protobuf:"bytes,4,opt,name=ObjectName,proto3" json:"object_name"`
+	// @inject_tag: json:"file_hash"
+	FileHash      string `protobuf:"bytes,5,opt,name=FileHash,proto3" json:"file_hash"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -180,6 +182,13 @@ func (x *FileUploadRequest) GetFileSize() int64 {
 func (x *FileUploadRequest) GetObjectName() string {
 	if x != nil {
 		return x.ObjectName
+	}
+	return ""
+}
+
+func (x *FileUploadRequest) GetFileHash() string {
+	if x != nil {
+		return x.FileHash
 	}
 	return ""
 }
@@ -270,7 +279,9 @@ type BigFileUploadRequest struct {
 	// @inject_tag: json:"content" form:"content"
 	Content []byte `protobuf:"bytes,5,opt,name=Content,proto3" json:"content" form:"content"` // 当前分片的数据
 	// @inject_tag: json:"is_last" form:"is_last"
-	IsLast        bool `protobuf:"varint,6,opt,name=IsLast,proto3" json:"is_last" form:"is_last"` // 是否为最后一个分片
+	IsLast bool `protobuf:"varint,6,opt,name=IsLast,proto3" json:"is_last" form:"is_last"` // 是否为最后一个分片
+	// @inject_tag: json:"file_hash"
+	FileHash      string `protobuf:"bytes,7,opt,name=FileHash,proto3" json:"file_hash"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -345,6 +356,13 @@ func (x *BigFileUploadRequest) GetIsLast() bool {
 		return x.IsLast
 	}
 	return false
+}
+
+func (x *BigFileUploadRequest) GetFileHash() string {
+	if x != nil {
+		return x.FileHash
+	}
+	return ""
 }
 
 type BigFileUploadResponse struct {
@@ -800,6 +818,124 @@ func (x *FileCommonResponse) GetMsg() string {
 	return ""
 }
 
+// 秒传哈希检测
+type CheckFileRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// @inject_tag: json:"file_hash"
+	FileHash string `protobuf:"bytes,1,opt,name=FileHash,proto3" json:"file_hash"`
+	// @inject_tag: json:"user_id" form:"user_id"
+	UserID        uint64 `protobuf:"varint,2,opt,name=UserID,proto3" json:"user_id" form:"user_id"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CheckFileRequest) Reset() {
+	*x = CheckFileRequest{}
+	mi := &file_files_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CheckFileRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CheckFileRequest) ProtoMessage() {}
+
+func (x *CheckFileRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_files_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CheckFileRequest.ProtoReflect.Descriptor instead.
+func (*CheckFileRequest) Descriptor() ([]byte, []int) {
+	return file_files_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *CheckFileRequest) GetFileHash() string {
+	if x != nil {
+		return x.FileHash
+	}
+	return ""
+}
+
+func (x *CheckFileRequest) GetUserID() uint64 {
+	if x != nil {
+		return x.UserID
+	}
+	return 0
+}
+
+type CheckFileResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// @inject_tag: json:"file_id" form:"file_id"
+	FileID uint64 `protobuf:"varint,1,opt,name=FileID,proto3" json:"file_id" form:"file_id"`
+	// @inject_tag: json:"object_url"
+	ObjectUrl string `protobuf:"bytes,2,opt,name=ObjectUrl,proto3" json:"object_url"`
+	// @inject_tag: json:"exists"
+	Exists        bool `protobuf:"varint,3,opt,name=exists,proto3" json:"exists"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CheckFileResponse) Reset() {
+	*x = CheckFileResponse{}
+	mi := &file_files_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CheckFileResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CheckFileResponse) ProtoMessage() {}
+
+func (x *CheckFileResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_files_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CheckFileResponse.ProtoReflect.Descriptor instead.
+func (*CheckFileResponse) Descriptor() ([]byte, []int) {
+	return file_files_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *CheckFileResponse) GetFileID() uint64 {
+	if x != nil {
+		return x.FileID
+	}
+	return 0
+}
+
+func (x *CheckFileResponse) GetObjectUrl() string {
+	if x != nil {
+		return x.ObjectUrl
+	}
+	return ""
+}
+
+func (x *CheckFileResponse) GetExists() bool {
+	if x != nil {
+		return x.Exists
+	}
+	return false
+}
+
 var File_files_proto protoreflect.FileDescriptor
 
 const file_files_proto_rawDesc = "" +
@@ -813,19 +949,20 @@ const file_files_proto_rawDesc = "" +
 	"\x06Bucket\x18\x05 \x01(\tR\x06Bucket\x12\x1e\n" +
 	"\n" +
 	"ObjectName\x18\x06 \x01(\tR\n" +
-	"ObjectName\"\x83\x01\n" +
+	"ObjectName\"\x9f\x01\n" +
 	"\x11FileUploadRequest\x12\x16\n" +
 	"\x06UserID\x18\x01 \x01(\x04R\x06UserID\x12\x1a\n" +
 	"\bFilename\x18\x02 \x01(\tR\bFilename\x12\x1a\n" +
 	"\bFileSize\x18\x03 \x01(\x03R\bFileSize\x12\x1e\n" +
 	"\n" +
 	"ObjectName\x18\x04 \x01(\tR\n" +
-	"ObjectName\"p\n" +
+	"ObjectName\x12\x1a\n" +
+	"\bFileHash\x18\x05 \x01(\tR\bFileHash\"p\n" +
 	"\x12FileUploadResponse\x12\x12\n" +
 	"\x04Code\x18\x01 \x01(\x03R\x04Code\x12\x10\n" +
 	"\x03Msg\x18\x02 \x01(\tR\x03Msg\x12\x1c\n" +
 	"\tObjectUrl\x18\x03 \x01(\tR\tObjectUrl\x12\x16\n" +
-	"\x06FileID\x18\x04 \x01(\x04R\x06FileID\"\xb8\x01\n" +
+	"\x06FileID\x18\x04 \x01(\x04R\x06FileID\"\xd4\x01\n" +
 	"\x14BigFileUploadRequest\x12\x16\n" +
 	"\x06UserID\x18\x01 \x01(\x04R\x06UserID\x12\x1a\n" +
 	"\bFilename\x18\x02 \x01(\tR\bFilename\x12\x1a\n" +
@@ -834,7 +971,8 @@ const file_files_proto_rawDesc = "" +
 	"ObjectName\x18\x04 \x01(\tR\n" +
 	"ObjectName\x12\x18\n" +
 	"\aContent\x18\x05 \x01(\fR\aContent\x12\x16\n" +
-	"\x06IsLast\x18\x06 \x01(\bR\x06IsLast\"s\n" +
+	"\x06IsLast\x18\x06 \x01(\bR\x06IsLast\x12\x1a\n" +
+	"\bFileHash\x18\a \x01(\tR\bFileHash\"s\n" +
 	"\x15BigFileUploadResponse\x12\x12\n" +
 	"\x04Code\x18\x01 \x01(\x03R\x04Code\x12\x10\n" +
 	"\x03Msg\x18\x02 \x01(\tR\x03Msg\x12\x1c\n" +
@@ -864,7 +1002,14 @@ const file_files_proto_rawDesc = "" +
 	"\bFilename\x18\x04 \x01(\tR\bFilename\":\n" +
 	"\x12FileCommonResponse\x12\x12\n" +
 	"\x04Code\x18\x01 \x01(\x03R\x04Code\x12\x10\n" +
-	"\x03Msg\x18\x02 \x01(\tR\x03Msg2\xac\x02\n" +
+	"\x03Msg\x18\x02 \x01(\tR\x03Msg\"F\n" +
+	"\x10CheckFileRequest\x12\x1a\n" +
+	"\bFileHash\x18\x01 \x01(\tR\bFileHash\x12\x16\n" +
+	"\x06UserID\x18\x02 \x01(\x04R\x06UserID\"a\n" +
+	"\x11CheckFileResponse\x12\x16\n" +
+	"\x06FileID\x18\x01 \x01(\x04R\x06FileID\x12\x1c\n" +
+	"\tObjectUrl\x18\x02 \x01(\tR\tObjectUrl\x12\x16\n" +
+	"\x06exists\x18\x03 \x01(\bR\x06exists2\xe6\x02\n" +
 	"\fFilesService\x125\n" +
 	"\n" +
 	"FileUpload\x12\x12.FileUploadRequest\x1a\x13.FileUploadResponse\x12@\n" +
@@ -872,7 +1017,8 @@ const file_files_proto_rawDesc = "" +
 	"\n" +
 	"FileDelete\x12\x12.FileDeleteRequest\x1a\x13.FileCommonResponse\x12/\n" +
 	"\bFileList\x12\x10.FileListRequest\x1a\x11.FileListResponse\x12;\n" +
-	"\fFileDownload\x12\x14.FileDownloadRequest\x1a\x15.FileDownloadResponseB\bZ\x06files/b\x06proto3"
+	"\fFileDownload\x12\x14.FileDownloadRequest\x1a\x15.FileDownloadResponse\x128\n" +
+	"\x0fCheckFileExists\x12\x11.CheckFileRequest\x1a\x12.CheckFileResponseB\bZ\x06files/b\x06proto3"
 
 var (
 	file_files_proto_rawDescOnce sync.Once
@@ -886,7 +1032,7 @@ func file_files_proto_rawDescGZIP() []byte {
 	return file_files_proto_rawDescData
 }
 
-var file_files_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_files_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_files_proto_goTypes = []any{
 	(*FileModel)(nil),             // 0: FileModel
 	(*FileUploadRequest)(nil),     // 1: FileUploadRequest
@@ -899,6 +1045,8 @@ var file_files_proto_goTypes = []any{
 	(*FileDownloadRequest)(nil),   // 8: FileDownloadRequest
 	(*FileDownloadResponse)(nil),  // 9: FileDownloadResponse
 	(*FileCommonResponse)(nil),    // 10: FileCommonResponse
+	(*CheckFileRequest)(nil),      // 11: CheckFileRequest
+	(*CheckFileResponse)(nil),     // 12: CheckFileResponse
 }
 var file_files_proto_depIdxs = []int32{
 	0,  // 0: FileListResponse.Files:type_name -> FileModel
@@ -907,13 +1055,15 @@ var file_files_proto_depIdxs = []int32{
 	5,  // 3: FilesService.FileDelete:input_type -> FileDeleteRequest
 	6,  // 4: FilesService.FileList:input_type -> FileListRequest
 	8,  // 5: FilesService.FileDownload:input_type -> FileDownloadRequest
-	2,  // 6: FilesService.FileUpload:output_type -> FileUploadResponse
-	4,  // 7: FilesService.BigFileUpload:output_type -> BigFileUploadResponse
-	10, // 8: FilesService.FileDelete:output_type -> FileCommonResponse
-	7,  // 9: FilesService.FileList:output_type -> FileListResponse
-	9,  // 10: FilesService.FileDownload:output_type -> FileDownloadResponse
-	6,  // [6:11] is the sub-list for method output_type
-	1,  // [1:6] is the sub-list for method input_type
+	11, // 6: FilesService.CheckFileExists:input_type -> CheckFileRequest
+	2,  // 7: FilesService.FileUpload:output_type -> FileUploadResponse
+	4,  // 8: FilesService.BigFileUpload:output_type -> BigFileUploadResponse
+	10, // 9: FilesService.FileDelete:output_type -> FileCommonResponse
+	7,  // 10: FilesService.FileList:output_type -> FileListResponse
+	9,  // 11: FilesService.FileDownload:output_type -> FileDownloadResponse
+	12, // 12: FilesService.CheckFileExists:output_type -> CheckFileResponse
+	7,  // [7:13] is the sub-list for method output_type
+	1,  // [1:7] is the sub-list for method input_type
 	1,  // [1:1] is the sub-list for extension type_name
 	1,  // [1:1] is the sub-list for extension extendee
 	0,  // [0:1] is the sub-list for field type_name
@@ -930,7 +1080,7 @@ func file_files_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_files_proto_rawDesc), len(file_files_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

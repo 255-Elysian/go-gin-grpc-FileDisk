@@ -2,13 +2,17 @@ package service
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"grpc-todolist-disk/app/files/internal/repository/dao"
+	"grpc-todolist-disk/app/files/internal/repository/utils"
 	pb "grpc-todolist-disk/idl/pb/files"
 	"grpc-todolist-disk/utils/e"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -51,6 +55,7 @@ func (*FilesSrv) BigFileUpload(stream pb.FilesService_BigFileUploadServer) error
 		objectPath string
 		totalSize  int64
 		out        *os.File
+		hashes     = sha256.New() // 创建 Hash 实例
 	)
 
 	for {
@@ -68,9 +73,9 @@ func (*FilesSrv) BigFileUpload(stream pb.FilesService_BigFileUploadServer) error
 		if firstReq == nil {
 			firstReq = req
 
-			// 生成路径
-			objectPath = filepath.Join("stores/uploaded_files", req.ObjectName)
-			if err := os.MkdirAll(filepath.Dir(objectPath), os.ModePerm); err != nil {
+			// 写入临时路径
+			objectPath = filepath.Join("stores/uploaded_temp", req.ObjectName)
+			if err = os.MkdirAll(filepath.Dir(objectPath), os.ModePerm); err != nil {
 				return stream.SendAndClose(&pb.BigFileUploadResponse{
 					Code: e.ERROR,
 					Msg:  "创建目录失败: " + err.Error(),
@@ -84,10 +89,18 @@ func (*FilesSrv) BigFileUpload(stream pb.FilesService_BigFileUploadServer) error
 					Msg:  "创建文件失败: " + err.Error(),
 				})
 			}
-			defer out.Close()
+			//defer out.Close()
 		}
 
-		// 写入内容
+		// 写入 Hash 内容
+		if _, err = hashes.Write(req.Content); err != nil {
+			return stream.SendAndClose(&pb.BigFileUploadResponse{
+				Code: e.ERROR,
+				Msg:  "计算 Hash 错误: " + err.Error(),
+			})
+		}
+
+		// 写入磁盘
 		n, err := out.Write(req.Content)
 		if err != nil {
 			return stream.SendAndClose(&pb.BigFileUploadResponse{
@@ -98,7 +111,13 @@ func (*FilesSrv) BigFileUpload(stream pb.FilesService_BigFileUploadServer) error
 		totalSize += int64(n)
 
 		if req.IsLast {
-			firstReq.FileSize = totalSize
+			// 最后一块后立即关闭文件
+			if err := out.Close(); err != nil {
+				return stream.SendAndClose(&pb.BigFileUploadResponse{
+					Code: e.ERROR,
+					Msg:  "文件关闭失败: " + err.Error(),
+				})
+			}
 			break
 		}
 	}
@@ -110,13 +129,53 @@ func (*FilesSrv) BigFileUpload(stream pb.FilesService_BigFileUploadServer) error
 			Msg:  "上传内容为空",
 		})
 	}
-	firstReq.FileSize = totalSize
+
+	// 计算最终 Hash 值
+	fileHash := hex.EncodeToString(hashes.Sum(nil))
+	firstReq.FileHash = fileHash
+	log.Println("FileHash:", fileHash)
+	// 检查数据库是否已有相同文件
+	exist, err := dao.NewFilesDao().FindByHash(&pb.CheckFileRequest{
+		FileHash: firstReq.FileHash,
+		UserID:   firstReq.UserID,
+	})
+	if err != nil {
+		return stream.SendAndClose(&pb.BigFileUploadResponse{
+			Code: e.ERROR,
+			Msg:  "检查文件 Hash 失败: " + err.Error(),
+		})
+	}
+	if exist != nil {
+		utils.SafeRemove(objectPath) // 删除临时文件（忽略错误）
+		return stream.SendAndClose(&pb.BigFileUploadResponse{
+			Code:      e.SUCCESS,
+			Msg:       "秒传成功，文件已存在",
+			FileID:    uint64(exist.ID),
+			ObjectUrl: filepath.Join("stores/uploaded_files", exist.ObjectName),
+		})
+	}
+
+	// 将文件移到正式目录
+	finalPath := filepath.Join("stores/uploaded_files", firstReq.ObjectName)
+	if err = os.MkdirAll(filepath.Dir(finalPath), os.ModePerm); err != nil {
+		return stream.SendAndClose(&pb.BigFileUploadResponse{
+			Code: e.ERROR,
+			Msg:  "创建目标目录失败: " + err.Error(),
+		})
+	}
+	if err = os.Rename(objectPath, finalPath); err != nil {
+		return stream.SendAndClose(&pb.BigFileUploadResponse{
+			Code: e.ERROR,
+			Msg:  "移动文件失败: " + err.Error(),
+		})
+	}
 
 	// 数据库保存记录
 	//log.Println("收到上传总大小：", totalSize)
 	firstReq.FileSize = totalSize
 	file, err := dao.NewFilesDao().CreateBigFile(firstReq)
 	if err != nil {
+		utils.SafeRemove(finalPath) // 删除已经移动过去的正式文件
 		return stream.SendAndClose(&pb.BigFileUploadResponse{
 			Code: e.ERROR,
 			Msg:  e.GetMsg(e.ERROR),
@@ -220,4 +279,20 @@ func (*FilesSrv) FileDownload(ctx context.Context, req *pb.FileDownloadRequest) 
 	resp.Filename = file.FileName
 	resp.Msg = e.GetMsg(int(resp.Code))
 	return
+}
+
+// CheckFileExists 秒传哈希检测
+func (*FilesSrv) CheckFileExists(ctx context.Context, req *pb.CheckFileRequest) (*pb.CheckFileResponse, error) {
+	file, err := dao.NewFilesDao().FindByHash(req)
+	if err != nil {
+		return nil, err
+	}
+	if file == nil {
+		return &pb.CheckFileResponse{Exists: false}, nil
+	}
+	return &pb.CheckFileResponse{
+		FileID:    uint64(file.ID),
+		ObjectUrl: filepath.Join("stores/uploaded_files", file.ObjectName),
+		Exists:    true,
+	}, nil
 }

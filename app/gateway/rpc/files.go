@@ -127,3 +127,12 @@ func FileDownload(ctx context.Context, req *pb.FileDownloadRequest) (resp *pb.Fi
 	}
 	return
 }
+
+func CheckFileExists(ctx context.Context, req *pb.CheckFileRequest) (resp *pb.CheckFileResponse, err error) {
+	resp, err = FilesClient.CheckFileExists(ctx, req)
+	if err != nil {
+		return
+	}
+
+	return
+}

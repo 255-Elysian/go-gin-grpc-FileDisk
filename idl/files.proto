@@ -26,6 +26,8 @@ message FileUploadRequest {
   int64 FileSize = 3;
   // @inject_tag: json:"object_name"
   string ObjectName = 4;
+  // @inject_tag: json:"file_hash"
+  string FileHash = 5;
 }
 
 message FileUploadResponse {
@@ -53,6 +55,8 @@ message BigFileUploadRequest {
   bytes Content = 5;            // 当前分片的数据
   // @inject_tag: json:"is_last" form:"is_last"
   bool IsLast = 6;            // 是否为最后一个分片
+  // @inject_tag: json:"file_hash"
+  string FileHash = 7;
 }
 
 message BigFileUploadResponse {
@@ -123,6 +127,22 @@ message FileCommonResponse {
   string Msg = 2;
 }
 
+// 秒传哈希检测
+message CheckFileRequest {
+  // @inject_tag: json:"file_hash"
+  string FileHash = 1;
+  // @inject_tag: json:"user_id" form:"user_id"
+  uint64 UserID = 2;
+}
+
+message CheckFileResponse {
+  // @inject_tag: json:"file_id" form:"file_id"
+  uint64 FileID = 1;
+  // @inject_tag: json:"object_url"
+  string ObjectUrl = 2;
+  // @inject_tag: json:"exists"
+  bool exists = 3;
+}
 
 service FilesService {
   rpc FileUpload(FileUploadRequest) returns (FileUploadResponse);
@@ -130,4 +150,5 @@ service FilesService {
   rpc FileDelete(FileDeleteRequest) returns (FileCommonResponse);
   rpc FileList(FileListRequest) returns (FileListResponse);
   rpc FileDownload(FileDownloadRequest) returns (FileDownloadResponse);
+  rpc CheckFileExists(CheckFileRequest) returns (CheckFileResponse);
 }

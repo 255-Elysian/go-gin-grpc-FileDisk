@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"errors"
 	"gorm.io/gorm"
 	"grpc-todolist-disk/app/files/internal/repository/model"
 	pb "grpc-todolist-disk/idl/pb/files"
@@ -24,6 +25,7 @@ func (dao *FilesDao) CreateFile(req *pb.FileUploadRequest) (*model.Files, error)
 		FileSize:   req.FileSize,
 		Bucket:     "local",
 		ObjectName: req.ObjectName,
+		FileHash:   req.FileHash,
 	}
 	if err := dao.DB.Model(&model.Files{}).Create(&file).Error; err != nil {
 		return nil, err
@@ -39,6 +41,7 @@ func (dao *FilesDao) CreateBigFile(req *pb.BigFileUploadRequest) (*model.Files, 
 		FileSize:   req.FileSize,
 		Bucket:     "local",
 		ObjectName: req.ObjectName,
+		FileHash:   req.FileHash,
 	}
 	if err := dao.DB.Model(&model.Files{}).Create(&file).Error; err != nil {
 		return nil, err
@@ -63,4 +66,14 @@ func (dao *FilesDao) DeleteFile(req *pb.FileDeleteRequest) error {
 func (dao *FilesDao) GetFileByUIDAndFID(uID, fID uint) (f *model.Files, err error) {
 	err = dao.DB.Model(&model.Files{}).Where("id = ? AND user_id = ?", fID, uID).First(&f).Error
 	return
+}
+
+// FindByHash 秒传哈希检测
+func (dao *FilesDao) FindByHash(req *pb.CheckFileRequest) (*model.Files, error) {
+	var file model.Files
+	err := dao.DB.Model(&model.Files{}).Where("user_id = ? AND file_hash = ?", req.UserID, req.FileHash).First(&file).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	return &file, err
 }

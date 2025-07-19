@@ -22,6 +22,10 @@ func UserRegister(ctx context.Context, req *pb.UserRequest) (resp *pb.UserCommon
 
 func UserLogin(ctx context.Context, req *pb.UserRequest) (*pb.UserResponse, error) {
 	r, err := UserClient.UserLogin(ctx, req)
+	if r.Code == e.ErrorUserPassword {
+		err = errors.New(r.Msg)
+		return nil, err
+	}
 	if r.UserDetail == nil {
 		err = errors.New("返回的用户为空")
 		return nil, err

@@ -1,12 +1,16 @@
 package http
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"grpc-todolist-disk/app/gateway/rpc"
 	"grpc-todolist-disk/app/gateway/utils"
 	pb "grpc-todolist-disk/idl/pb/files"
 	"grpc-todolist-disk/utils/ctl"
+	"grpc-todolist-disk/utils/e"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -56,6 +60,54 @@ func FileUpload(ctx *gin.Context) {
 			})
 			return
 		}
+
+		// 计算文件 hash
+		src, err := file.Open()
+		if err != nil {
+			ctx.JSON(400, gin.H{
+				"msg":  "文件打开失败",
+				"data": err.Error(),
+				"code": "400",
+			})
+			return
+		}
+		defer src.Close()
+
+		h := sha256.New()
+		if _, err := io.Copy(h, src); err != nil {
+			ctx.JSON(400, gin.H{
+				"msg":  "计算文件 Hash 失败",
+				"data": err.Error(),
+				"code": "400",
+			})
+			return
+		}
+		fileHash := hex.EncodeToString(h.Sum(nil))
+		req.FileHash = fileHash
+		// 检查数据库
+		exist, err := rpc.CheckFileExists(ctx, &pb.CheckFileRequest{
+			FileHash: req.FileHash,
+			UserID:   req.UserID,
+		})
+		if err != nil {
+			ctx.JSON(500, gin.H{
+				"msg":  "数据库查询失败",
+				"data": err.Error(),
+				"code": "500",
+			})
+			return
+		}
+		if exist.Exists {
+			// 命中，秒传
+			ctx.JSON(http.StatusOK, ctl.RespSuccess(ctx, &pb.FileUploadResponse{
+				Code:      e.SUCCESS,
+				Msg:       "秒传成功，文件已存在",
+				FileID:    exist.FileID,
+				ObjectUrl: exist.ObjectUrl,
+			}))
+			return
+		}
+
 		//log.Println("file.Filename:", file.Filename)
 		req.FileSize = file.Size
 		//log.Println("fileSize:", req.FileSize)
