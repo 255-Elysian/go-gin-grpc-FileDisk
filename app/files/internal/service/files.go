@@ -7,7 +7,7 @@ import (
 	"errors"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
-	"grpc-todolist-disk/app/files/internal/repository/dao"
+	"grpc-todolist-disk/app/files/dao"
 	"grpc-todolist-disk/app/files/internal/repository/utils"
 	pb "grpc-todolist-disk/idl/pb/files"
 	"grpc-todolist-disk/utils/e"

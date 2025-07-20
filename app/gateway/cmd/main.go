@@ -5,6 +5,7 @@ import (
 	"errors"
 	"grpc-todolist-disk/app/gateway/router"
 	"grpc-todolist-disk/app/gateway/rpc"
+	"grpc-todolist-disk/app/gateway/utils/mq"
 	"grpc-todolist-disk/conf"
 	"log"
 	"net/http"
@@ -16,6 +17,7 @@ import (
 
 func main() {
 	conf.InitConfig()
+	mq.Init()
 	rpc.Init()
 
 	// 创建 Gin 路由和 HTTP Server 实例

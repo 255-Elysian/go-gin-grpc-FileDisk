@@ -12,11 +12,16 @@ func main() {
 	service.Init()
 
 	var wg sync.WaitGroup
-	wg.Add(2)
+	wg.Add(3)
 
 	go func() {
 		defer wg.Done()
 		service.MsgConsumer()
+	}()
+
+	go func() {
+		defer wg.Done()
+		service.FileMsgConsumer()
 	}()
 
 	go func() {

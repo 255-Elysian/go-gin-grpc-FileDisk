@@ -60,9 +60,9 @@ type Token struct {
 }
 
 type Kafka struct {
-	Topic   string   `yaml:"topic"`
+	Topic   []string `yaml:"topic"`
 	Broker  []string `yaml:"broker"`
-	GroupId string   `yaml:"group_id"`
+	GroupId []string `yaml:"groupID"`
 }
 
 func InitConfig() {

@@ -60,10 +60,14 @@ token:
   longDuration: "1440"  # 长 token，多久必须重新登陆
 
 kafka:
-  topic: "user_cache"
+  topic:
+    - "user_cache"
+    - "file_cache"
   broker:
     - "localhost:9092"
-  group_id: "my_group"
+  groupID:
+    - "user_group"
+    - "file_group"
 
   # /opt/kafka/bin
   # 查看所有主题

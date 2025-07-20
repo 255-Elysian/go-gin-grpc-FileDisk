@@ -5,12 +5,20 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
+type TaskType int
+
+const (
+	TaskTypeClearCache TaskType = iota
+	TaskTypeFileUpload
+)
+
 // DelayedTask 是一个延时任务结构体
 type DelayedTask struct {
 	Name      string // 任务名称
 	Timestamp int64  // 执行任务的时间戳
 	Msg       *kafka.Message
-	Index     int // 在堆中的索引
+	Index     int      // 在堆中的索引
+	Type      TaskType // 新增任务类型：区分是清缓存还是文件上传
 }
 
 // DelayedTaskHeap 是一个延时任务堆

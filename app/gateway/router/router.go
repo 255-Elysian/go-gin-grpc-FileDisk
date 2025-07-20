@@ -53,6 +53,8 @@ func NewRouter() *gin.Engine {
 			authed.GET("file_list", http.FileList)
 			authed.DELETE("file_delete", http.FileDelete)
 			authed.GET("file_download", http.FileDownload)
+			// kafka 异步处理
+			authed.POST("upload", http.AsyncFileUpload)
 		}
 	}
 

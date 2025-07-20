@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"grpc-todolist-disk/app/gateway/rpc"
 	"grpc-todolist-disk/app/gateway/utils"
+	"grpc-todolist-disk/app/gateway/utils/mq"
 	pb "grpc-todolist-disk/idl/pb/files"
 	"grpc-todolist-disk/utils/ctl"
 	"grpc-todolist-disk/utils/e"
@@ -241,4 +242,126 @@ func FileDownload(ctx *gin.Context) {
 	}
 	//ctx.File(r.DownloadUrl)	// 不强制下载，可以只做预览
 	ctx.FileAttachment(r.DownloadUrl, r.Filename) // 强制下载
+}
+
+// AsyncFileUpload 异步上传（表单）
+func AsyncFileUpload(ctx *gin.Context) {
+	var req pb.FileUploadRequest
+	if err := ctx.ShouldBind(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, ctl.RespError(ctx, err, "参数绑定错误"))
+		return
+	}
+
+	user, err := ctl.GetUserInfo(ctx.Request.Context())
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, ctl.RespError(ctx, err, "获取用户信息错误"))
+		return
+	}
+	req.UserID = uint64(user.ID)
+
+	form, err := ctx.MultipartForm()
+	if err != nil {
+		ctx.JSON(200, gin.H{
+			"msg":  "获取表单失败",
+			"data": err.Error(),
+			"code": "400",
+		})
+		return
+	}
+	files := form.File["file"]
+	for _, file := range files {
+		if file.Size > 10*1024*1024 { // 文件大小超过10MB
+			ctx.JSON(400, gin.H{
+				"msg":  "文件过大",
+				"data": "文件大小超过10MB",
+				"code": "400",
+			})
+			return
+		}
+		if file.Filename == "" {
+			ctx.JSON(400, gin.H{
+				"msg":  "上传文件名不能为空",
+				"code": "400",
+			})
+			return
+		}
+
+		src, err := file.Open()
+		if err != nil {
+			ctx.JSON(200, gin.H{
+				"msg":  "文件打开失败",
+				"data": err.Error(),
+				"code": "400",
+			})
+			return
+		}
+		defer src.Close()
+
+		fileBytes, err := io.ReadAll(src)
+		if err != nil {
+			ctx.JSON(200, gin.H{
+				"msg":  "读取文件失败",
+				"data": err.Error(),
+				"code": "400",
+			})
+			return
+		}
+
+		// 计算文件 hash
+		hash := utils.Sha256Hash(fileBytes)
+		req.FileHash = hash
+		// 检查数据库
+		exist, err := rpc.CheckFileExists(ctx, &pb.CheckFileRequest{
+			FileHash: req.FileHash,
+			UserID:   req.UserID,
+		})
+		if err != nil {
+			ctx.JSON(500, gin.H{
+				"msg":  "数据库查询失败",
+				"data": err.Error(),
+				"code": "500",
+			})
+			return
+		}
+		if exist.Exists {
+			// 命中，秒传
+			ctx.JSON(http.StatusOK, ctl.RespSuccess(ctx, &pb.FileUploadResponse{
+				Code:      e.SUCCESS,
+				Msg:       "秒传成功，文件已存在",
+				FileID:    exist.FileID,
+				ObjectUrl: exist.ObjectUrl,
+			}))
+			return
+		}
+
+		// 生成目标 ObjectName
+		req.FileSize = file.Size
+		req.ObjectName = fmt.Sprintf("%d/%d_%s", req.UserID, time.Now().UnixMilli(), utils.Clean(file.Filename))
+		req.Filename = file.Filename // 文件名里的中文会被”_“代替
+
+		// 构建 Kafka 消息体，发送到异步上传消费者
+		msg := &mq.AsyncFileUploadMsg{
+			UserID:     req.UserID,
+			Filename:   file.Filename,
+			FileSize:   file.Size,
+			FileHash:   hash,
+			ObjectName: req.ObjectName,
+			Content:    fileBytes,
+		}
+
+		// 发送 kafka 异步任务
+		if err = mq.SendFileUploadTask(msg); err != nil {
+			ctx.JSON(500, gin.H{
+				"msg":  "异步任务发送失败",
+				"data": err.Error(),
+				"code": "500",
+			})
+			return
+		}
+	}
+
+	// 异步处理响应
+	ctx.JSON(http.StatusOK, ctl.RespSuccess(ctx, gin.H{
+		"msg": "文件上传任务已提交",
+	}))
 }

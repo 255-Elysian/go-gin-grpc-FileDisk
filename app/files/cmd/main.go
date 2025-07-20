@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
-	"grpc-todolist-disk/app/files/internal/repository/dao"
+	"grpc-todolist-disk/app/files/dao"
 	"grpc-todolist-disk/app/files/internal/service"
 	"grpc-todolist-disk/conf"
 	pb "grpc-todolist-disk/idl/pb/files"

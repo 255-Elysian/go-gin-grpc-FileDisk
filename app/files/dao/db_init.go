@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-var _db *gorm.DB
+var DB *gorm.DB
 
 func InitDB() {
 	mConfig := conf.Conf.MySQL
@@ -57,11 +57,11 @@ func Database(dsn string) error {
 	sqlDB.SetMaxIdleConns(20)  // 设置连接池，空闲
 	sqlDB.SetMaxOpenConns(100) // 打开
 	sqlDB.SetConnMaxLifetime(time.Second * 30)
-	_db = db
+	DB = db
 	migration()
 	return err
 }
 
 func NewDBClient() *gorm.DB {
-	return _db
+	return DB
 }

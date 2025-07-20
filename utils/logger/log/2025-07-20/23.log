@@ -1,0 +1,2 @@
+{"level":"info","ts":1753026116.424042,"msg":"/api/v1/upload","status":200,"method":"POST","path":"/api/v1/upload","query":"","cost":"1.6551729s","ip":"::1","user-agent":"PostmanRuntime/7.44.1","errors":"","latency":1.6551729}
+{"level":"info","ts":1753026775.872266,"msg":"/api/v1/upload","status":200,"method":"POST","path":"/api/v1/upload","query":"","cost":"1.3285784s","ip":"::1","user-agent":"PostmanRuntime/7.44.1","errors":"","latency":1.3285784}
