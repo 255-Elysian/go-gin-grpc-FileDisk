@@ -47,9 +47,10 @@ type AsyncFileUploadMsg struct {
 	FileHash   string `json:"file_hash"`
 	ObjectName string `json:"object_name"`
 	Content    []byte `json:"content"` // 小文件内容
+	TempPath   string `json:"temp_path"`
 }
 
-// HandleAsyncFileUpload 异步启动上传文件的消费者
+// HandleAsyncFileUpload 异步启动上传文件的消费者（表单）
 func HandleAsyncFileUpload(msg *kafka.Message) error {
 	var m AsyncFileUploadMsg
 	if err := json.Unmarshal(msg.Value, &m); err != nil {

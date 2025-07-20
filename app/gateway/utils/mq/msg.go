@@ -15,6 +15,7 @@ type AsyncFileUploadMsg struct {
 	FileHash   string `json:"file_hash"`
 	ObjectName string `json:"object_name"`
 	Content    []byte `json:"content"` // 小文件内容
+	TempPath   string `json:"temp_path"`
 }
 
 func SendFileUploadTask(msg *AsyncFileUploadMsg) error {

@@ -46,7 +46,7 @@ func MsgConsumer() {
 	}
 }
 
-// FileMsgConsumer 文件消费协程
+// FileMsgConsumer 文件消费协程（表单）
 func FileMsgConsumer() {
 	for {
 		// 读取下一条消息
@@ -133,6 +133,8 @@ func task() {
 				continue
 			}
 			log.Printf("Uploaded file: %s", task.Name)
+		default:
+			panic("unhandled default case")
 
 		}
 

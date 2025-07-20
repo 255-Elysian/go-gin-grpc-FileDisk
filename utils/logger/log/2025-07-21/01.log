@@ -1,0 +1,1 @@
+{"level":"info","ts":1753033997.0961862,"msg":"/api/v1/big_upload","status":200,"method":"POST","path":"/api/v1/big_upload","query":"","cost":"1.6558487s","ip":"::1","user-agent":"Go-http-client/1.1","errors":"","latency":1.6558487}
