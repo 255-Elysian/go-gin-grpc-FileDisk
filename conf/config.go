@@ -17,6 +17,7 @@ type Config struct {
 	Domain   map[string]*Domain  `yaml:"domains"`
 	Token    *Token              `yaml:"token"`
 	Kafka    *Kafka              `yaml:"kafka"`
+	Qiniu    *Qiniu              `yaml:"qiniu"`
 }
 
 type Server struct {
@@ -63,6 +64,14 @@ type Kafka struct {
 	Topic   []string `yaml:"topic"`
 	Broker  []string `yaml:"broker"`
 	GroupId []string `yaml:"groupID"`
+}
+
+type Qiniu struct {
+	AccessKey string `yaml:"accessKey"`
+	SecretKey string `yaml:"secretKey"`
+	Bucket    string `yaml:"bucket"`
+	Domain    string `yaml:"domain"`
+	Zone      string `yaml:"zone"`
 }
 
 func InitConfig() {

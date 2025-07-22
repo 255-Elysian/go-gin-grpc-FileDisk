@@ -1,0 +1,1 @@
+{"level":"info","ts":1753210331.6982849,"msg":"/api/v1/qiniu_file_download","status":200,"method":"GET","path":"/api/v1/qiniu_file_download","query":"file_id=33","cost":"2.6972ms","ip":"::1","user-agent":"curl/8.4.0","errors":"","latency":0.0026972}

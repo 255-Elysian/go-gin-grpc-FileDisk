@@ -55,6 +55,14 @@ func NewRouter() *gin.Engine {
 			authed.GET("file_download", http.FileDownload)
 			// kafka 异步处理
 			authed.POST("upload", http.AsyncFileUpload)
+
+			// 七牛云
+			authed.POST("qiniu_file_upload", http.QiniuFileUpload)
+			authed.POST("qiniu_big_file_upload", http.QiniuBigFileUpload)
+			authed.GET("qiniu_file_download", http.QiniuFileDownload)
+			authed.DELETE("qiniu_file_delete", http.QiniuFileDelete)
+			// 全盘文件搜索
+			authed.GET("global_file_search", http.GlobalFileSearch)
 		}
 	}
 

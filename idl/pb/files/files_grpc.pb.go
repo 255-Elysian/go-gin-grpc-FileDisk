@@ -19,12 +19,17 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	FilesService_FileUpload_FullMethodName      = "/FilesService/FileUpload"
-	FilesService_BigFileUpload_FullMethodName   = "/FilesService/BigFileUpload"
-	FilesService_FileDelete_FullMethodName      = "/FilesService/FileDelete"
-	FilesService_FileList_FullMethodName        = "/FilesService/FileList"
-	FilesService_FileDownload_FullMethodName    = "/FilesService/FileDownload"
-	FilesService_CheckFileExists_FullMethodName = "/FilesService/CheckFileExists"
+	FilesService_FileUpload_FullMethodName         = "/FilesService/FileUpload"
+	FilesService_BigFileUpload_FullMethodName      = "/FilesService/BigFileUpload"
+	FilesService_FileDelete_FullMethodName         = "/FilesService/FileDelete"
+	FilesService_FileList_FullMethodName           = "/FilesService/FileList"
+	FilesService_FileDownload_FullMethodName       = "/FilesService/FileDownload"
+	FilesService_CheckFileExists_FullMethodName    = "/FilesService/CheckFileExists"
+	FilesService_QiniuFileUpload_FullMethodName    = "/FilesService/QiniuFileUpload"
+	FilesService_QiniuBigFileUpload_FullMethodName = "/FilesService/QiniuBigFileUpload"
+	FilesService_QiniuFileDownload_FullMethodName  = "/FilesService/QiniuFileDownload"
+	FilesService_GlobalFileSearch_FullMethodName   = "/FilesService/GlobalFileSearch"
+	FilesService_QiniuFileDelete_FullMethodName    = "/FilesService/QiniuFileDelete"
 )
 
 // FilesServiceClient is the client API for FilesService service.
@@ -37,6 +42,15 @@ type FilesServiceClient interface {
 	FileList(ctx context.Context, in *FileListRequest, opts ...grpc.CallOption) (*FileListResponse, error)
 	FileDownload(ctx context.Context, in *FileDownloadRequest, opts ...grpc.CallOption) (*FileDownloadResponse, error)
 	CheckFileExists(ctx context.Context, in *CheckFileRequest, opts ...grpc.CallOption) (*CheckFileResponse, error)
+	// 七牛云上传接口
+	QiniuFileUpload(ctx context.Context, in *FileUploadRequest, opts ...grpc.CallOption) (*FileUploadResponse, error)
+	QiniuBigFileUpload(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[BigFileUploadRequest, BigFileUploadResponse], error)
+	// 七牛云下载接口
+	QiniuFileDownload(ctx context.Context, in *FileDownloadRequest, opts ...grpc.CallOption) (*FileDownloadResponse, error)
+	// 全盘文件搜索接口
+	GlobalFileSearch(ctx context.Context, in *GlobalFileSearchRequest, opts ...grpc.CallOption) (*GlobalFileSearchResponse, error)
+	// 七牛云文件删除接口
+	QiniuFileDelete(ctx context.Context, in *FileDeleteRequest, opts ...grpc.CallOption) (*FileCommonResponse, error)
 }
 
 type filesServiceClient struct {
@@ -110,6 +124,59 @@ func (c *filesServiceClient) CheckFileExists(ctx context.Context, in *CheckFileR
 	return out, nil
 }
 
+func (c *filesServiceClient) QiniuFileUpload(ctx context.Context, in *FileUploadRequest, opts ...grpc.CallOption) (*FileUploadResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FileUploadResponse)
+	err := c.cc.Invoke(ctx, FilesService_QiniuFileUpload_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *filesServiceClient) QiniuBigFileUpload(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[BigFileUploadRequest, BigFileUploadResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &FilesService_ServiceDesc.Streams[1], FilesService_QiniuBigFileUpload_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[BigFileUploadRequest, BigFileUploadResponse]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type FilesService_QiniuBigFileUploadClient = grpc.ClientStreamingClient[BigFileUploadRequest, BigFileUploadResponse]
+
+func (c *filesServiceClient) QiniuFileDownload(ctx context.Context, in *FileDownloadRequest, opts ...grpc.CallOption) (*FileDownloadResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FileDownloadResponse)
+	err := c.cc.Invoke(ctx, FilesService_QiniuFileDownload_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *filesServiceClient) GlobalFileSearch(ctx context.Context, in *GlobalFileSearchRequest, opts ...grpc.CallOption) (*GlobalFileSearchResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GlobalFileSearchResponse)
+	err := c.cc.Invoke(ctx, FilesService_GlobalFileSearch_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *filesServiceClient) QiniuFileDelete(ctx context.Context, in *FileDeleteRequest, opts ...grpc.CallOption) (*FileCommonResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FileCommonResponse)
+	err := c.cc.Invoke(ctx, FilesService_QiniuFileDelete_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FilesServiceServer is the server API for FilesService service.
 // All implementations must embed UnimplementedFilesServiceServer
 // for forward compatibility.
@@ -120,6 +187,15 @@ type FilesServiceServer interface {
 	FileList(context.Context, *FileListRequest) (*FileListResponse, error)
 	FileDownload(context.Context, *FileDownloadRequest) (*FileDownloadResponse, error)
 	CheckFileExists(context.Context, *CheckFileRequest) (*CheckFileResponse, error)
+	// 七牛云上传接口
+	QiniuFileUpload(context.Context, *FileUploadRequest) (*FileUploadResponse, error)
+	QiniuBigFileUpload(grpc.ClientStreamingServer[BigFileUploadRequest, BigFileUploadResponse]) error
+	// 七牛云下载接口
+	QiniuFileDownload(context.Context, *FileDownloadRequest) (*FileDownloadResponse, error)
+	// 全盘文件搜索接口
+	GlobalFileSearch(context.Context, *GlobalFileSearchRequest) (*GlobalFileSearchResponse, error)
+	// 七牛云文件删除接口
+	QiniuFileDelete(context.Context, *FileDeleteRequest) (*FileCommonResponse, error)
 	mustEmbedUnimplementedFilesServiceServer()
 }
 
@@ -147,6 +223,21 @@ func (UnimplementedFilesServiceServer) FileDownload(context.Context, *FileDownlo
 }
 func (UnimplementedFilesServiceServer) CheckFileExists(context.Context, *CheckFileRequest) (*CheckFileResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckFileExists not implemented")
+}
+func (UnimplementedFilesServiceServer) QiniuFileUpload(context.Context, *FileUploadRequest) (*FileUploadResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QiniuFileUpload not implemented")
+}
+func (UnimplementedFilesServiceServer) QiniuBigFileUpload(grpc.ClientStreamingServer[BigFileUploadRequest, BigFileUploadResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method QiniuBigFileUpload not implemented")
+}
+func (UnimplementedFilesServiceServer) QiniuFileDownload(context.Context, *FileDownloadRequest) (*FileDownloadResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QiniuFileDownload not implemented")
+}
+func (UnimplementedFilesServiceServer) GlobalFileSearch(context.Context, *GlobalFileSearchRequest) (*GlobalFileSearchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GlobalFileSearch not implemented")
+}
+func (UnimplementedFilesServiceServer) QiniuFileDelete(context.Context, *FileDeleteRequest) (*FileCommonResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QiniuFileDelete not implemented")
 }
 func (UnimplementedFilesServiceServer) mustEmbedUnimplementedFilesServiceServer() {}
 func (UnimplementedFilesServiceServer) testEmbeddedByValue()                      {}
@@ -266,6 +357,85 @@ func _FilesService_CheckFileExists_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FilesService_QiniuFileUpload_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FileUploadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FilesServiceServer).QiniuFileUpload(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FilesService_QiniuFileUpload_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FilesServiceServer).QiniuFileUpload(ctx, req.(*FileUploadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FilesService_QiniuBigFileUpload_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(FilesServiceServer).QiniuBigFileUpload(&grpc.GenericServerStream[BigFileUploadRequest, BigFileUploadResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type FilesService_QiniuBigFileUploadServer = grpc.ClientStreamingServer[BigFileUploadRequest, BigFileUploadResponse]
+
+func _FilesService_QiniuFileDownload_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FileDownloadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FilesServiceServer).QiniuFileDownload(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FilesService_QiniuFileDownload_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FilesServiceServer).QiniuFileDownload(ctx, req.(*FileDownloadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FilesService_GlobalFileSearch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GlobalFileSearchRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FilesServiceServer).GlobalFileSearch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FilesService_GlobalFileSearch_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FilesServiceServer).GlobalFileSearch(ctx, req.(*GlobalFileSearchRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FilesService_QiniuFileDelete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FileDeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FilesServiceServer).QiniuFileDelete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FilesService_QiniuFileDelete_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FilesServiceServer).QiniuFileDelete(ctx, req.(*FileDeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FilesService_ServiceDesc is the grpc.ServiceDesc for FilesService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -293,11 +463,32 @@ var FilesService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "CheckFileExists",
 			Handler:    _FilesService_CheckFileExists_Handler,
 		},
+		{
+			MethodName: "QiniuFileUpload",
+			Handler:    _FilesService_QiniuFileUpload_Handler,
+		},
+		{
+			MethodName: "QiniuFileDownload",
+			Handler:    _FilesService_QiniuFileDownload_Handler,
+		},
+		{
+			MethodName: "GlobalFileSearch",
+			Handler:    _FilesService_GlobalFileSearch_Handler,
+		},
+		{
+			MethodName: "QiniuFileDelete",
+			Handler:    _FilesService_QiniuFileDelete_Handler,
+		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "BigFileUpload",
 			Handler:       _FilesService_BigFileUpload_Handler,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "QiniuBigFileUpload",
+			Handler:       _FilesService_QiniuBigFileUpload_Handler,
 			ClientStreams: true,
 		},
 	},

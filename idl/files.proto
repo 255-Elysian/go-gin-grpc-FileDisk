@@ -144,6 +144,54 @@ message CheckFileResponse {
   bool exists = 3;
 }
 
+// 全局 file_name 模糊搜索
+message GlobalFileSearchRequest {
+  // @inject_tag: json:"file_name" form:"file_name"
+  string FileName = 1;     // 文件名关键词（支持模糊搜索）
+  // @inject_tag: json:"page" form:"page"
+  uint32 Page = 2;         // 页码，从1开始
+  // @inject_tag: json:"page_size" form:"page_size"
+  uint32 PageSize = 3;     // 每页大小，默认10
+  // @inject_tag: json:"bucket" form:"bucket"
+  string Bucket = 4;       // 存储桶过滤（可选），如"qiniu"
+}
+
+message GlobalFileSearchResponse {
+  // @inject_tag: json:"code" form:"code"
+  int64 Code = 1;
+  // @inject_tag: json:"msg" form:"msg"
+  string Msg = 2;
+  // @inject_tag: json:"global_file_info"
+  repeated GlobalFileInfo Files = 3;
+  // @inject_tag: json:"total"
+  uint32 Total = 4;        // 总记录数
+  // @inject_tag: json:"page"
+  uint32 Page = 5;         // 当前页码
+  // @inject_tag: json:"page_size"
+  uint32 PageSize = 6;     // 每页大小
+}
+
+message GlobalFileInfo {
+  // @inject_tag: json:"file_id"
+  uint64 FileID = 1;       // 文件ID
+  // @inject_tag: json:"file_name"
+  string FileName = 2;     // 文件名
+  // @inject_tag: json:"file_size"
+  int64 FileSize = 3;      // 文件大小
+  // @inject_tag: json:"bucket"
+  string Bucket = 4;       // 存储桶
+  // @inject_tag: json:"object_name"
+  string ObjectName = 5;   // 对象名
+  // @inject_tag: json:"file_hash"
+  string FileHash = 6;     // 文件哈希
+  // @inject_tag: json:"user_id"
+  uint64 UserID = 7;       // 上传用户ID
+  // @inject_tag: json:"created_at"
+  string CreatedAt = 8;    // 创建时间
+  // @inject_tag: json:"updated_at"
+  string UpdatedAt = 9;    // 更新时间
+}
+
 service FilesService {
   rpc FileUpload(FileUploadRequest) returns (FileUploadResponse);
   rpc BigFileUpload(stream BigFileUploadRequest) returns(BigFileUploadResponse);
@@ -151,4 +199,13 @@ service FilesService {
   rpc FileList(FileListRequest) returns (FileListResponse);
   rpc FileDownload(FileDownloadRequest) returns (FileDownloadResponse);
   rpc CheckFileExists(CheckFileRequest) returns (CheckFileResponse);
+  // 七牛云上传接口
+  rpc QiniuFileUpload(FileUploadRequest) returns (FileUploadResponse);
+  rpc QiniuBigFileUpload(stream BigFileUploadRequest) returns(BigFileUploadResponse);
+  // 七牛云下载接口
+  rpc QiniuFileDownload(FileDownloadRequest) returns (FileDownloadResponse);
+  // 全盘文件搜索接口
+  rpc GlobalFileSearch(GlobalFileSearchRequest) returns (GlobalFileSearchResponse);
+  // 七牛云文件删除接口
+  rpc QiniuFileDelete(FileDeleteRequest) returns (FileCommonResponse);
 }

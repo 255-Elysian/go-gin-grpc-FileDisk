@@ -936,6 +936,286 @@ func (x *CheckFileResponse) GetExists() bool {
 	return false
 }
 
+// 全局 file_name 模糊搜索
+type GlobalFileSearchRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// @inject_tag: json:"file_name" form:"file_name"
+	FileName string `protobuf:"bytes,1,opt,name=FileName,proto3" json:"file_name" form:"file_name"` // 文件名关键词（支持模糊搜索）
+	// @inject_tag: json:"page" form:"page"
+	Page uint32 `protobuf:"varint,2,opt,name=Page,proto3" json:"page" form:"page"` // 页码，从1开始
+	// @inject_tag: json:"page_size" form:"page_size"
+	PageSize uint32 `protobuf:"varint,3,opt,name=PageSize,proto3" json:"page_size" form:"page_size"` // 每页大小，默认10
+	// @inject_tag: json:"bucket" form:"bucket"
+	Bucket        string `protobuf:"bytes,4,opt,name=Bucket,proto3" json:"bucket" form:"bucket"` // 存储桶过滤（可选），如"qiniu"
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GlobalFileSearchRequest) Reset() {
+	*x = GlobalFileSearchRequest{}
+	mi := &file_files_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GlobalFileSearchRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GlobalFileSearchRequest) ProtoMessage() {}
+
+func (x *GlobalFileSearchRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_files_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GlobalFileSearchRequest.ProtoReflect.Descriptor instead.
+func (*GlobalFileSearchRequest) Descriptor() ([]byte, []int) {
+	return file_files_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *GlobalFileSearchRequest) GetFileName() string {
+	if x != nil {
+		return x.FileName
+	}
+	return ""
+}
+
+func (x *GlobalFileSearchRequest) GetPage() uint32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *GlobalFileSearchRequest) GetPageSize() uint32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *GlobalFileSearchRequest) GetBucket() string {
+	if x != nil {
+		return x.Bucket
+	}
+	return ""
+}
+
+type GlobalFileSearchResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// @inject_tag: json:"code" form:"code"
+	Code int64 `protobuf:"varint,1,opt,name=Code,proto3" json:"code" form:"code"`
+	// @inject_tag: json:"msg" form:"msg"
+	Msg string `protobuf:"bytes,2,opt,name=Msg,proto3" json:"msg" form:"msg"`
+	// @inject_tag: json:"global_file_info"
+	Files []*GlobalFileInfo `protobuf:"bytes,3,rep,name=Files,proto3" json:"global_file_info"`
+	// @inject_tag: json:"total"
+	Total uint32 `protobuf:"varint,4,opt,name=Total,proto3" json:"total"` // 总记录数
+	// @inject_tag: json:"page"
+	Page uint32 `protobuf:"varint,5,opt,name=Page,proto3" json:"page"` // 当前页码
+	// @inject_tag: json:"page_size"
+	PageSize      uint32 `protobuf:"varint,6,opt,name=PageSize,proto3" json:"page_size"` // 每页大小
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GlobalFileSearchResponse) Reset() {
+	*x = GlobalFileSearchResponse{}
+	mi := &file_files_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GlobalFileSearchResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GlobalFileSearchResponse) ProtoMessage() {}
+
+func (x *GlobalFileSearchResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_files_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GlobalFileSearchResponse.ProtoReflect.Descriptor instead.
+func (*GlobalFileSearchResponse) Descriptor() ([]byte, []int) {
+	return file_files_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *GlobalFileSearchResponse) GetCode() int64 {
+	if x != nil {
+		return x.Code
+	}
+	return 0
+}
+
+func (x *GlobalFileSearchResponse) GetMsg() string {
+	if x != nil {
+		return x.Msg
+	}
+	return ""
+}
+
+func (x *GlobalFileSearchResponse) GetFiles() []*GlobalFileInfo {
+	if x != nil {
+		return x.Files
+	}
+	return nil
+}
+
+func (x *GlobalFileSearchResponse) GetTotal() uint32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+func (x *GlobalFileSearchResponse) GetPage() uint32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *GlobalFileSearchResponse) GetPageSize() uint32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+type GlobalFileInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// @inject_tag: json:"file_id"
+	FileID uint64 `protobuf:"varint,1,opt,name=FileID,proto3" json:"file_id"` // 文件ID
+	// @inject_tag: json:"file_name"
+	FileName string `protobuf:"bytes,2,opt,name=FileName,proto3" json:"file_name"` // 文件名
+	// @inject_tag: json:"file_size"
+	FileSize int64 `protobuf:"varint,3,opt,name=FileSize,proto3" json:"file_size"` // 文件大小
+	// @inject_tag: json:"bucket"
+	Bucket string `protobuf:"bytes,4,opt,name=Bucket,proto3" json:"bucket"` // 存储桶
+	// @inject_tag: json:"object_name"
+	ObjectName string `protobuf:"bytes,5,opt,name=ObjectName,proto3" json:"object_name"` // 对象名
+	// @inject_tag: json:"file_hash"
+	FileHash string `protobuf:"bytes,6,opt,name=FileHash,proto3" json:"file_hash"` // 文件哈希
+	// @inject_tag: json:"user_id"
+	UserID uint64 `protobuf:"varint,7,opt,name=UserID,proto3" json:"user_id"` // 上传用户ID
+	// @inject_tag: json:"created_at"
+	CreatedAt string `protobuf:"bytes,8,opt,name=CreatedAt,proto3" json:"created_at"` // 创建时间
+	// @inject_tag: json:"updated_at"
+	UpdatedAt     string `protobuf:"bytes,9,opt,name=UpdatedAt,proto3" json:"updated_at"` // 更新时间
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GlobalFileInfo) Reset() {
+	*x = GlobalFileInfo{}
+	mi := &file_files_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GlobalFileInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GlobalFileInfo) ProtoMessage() {}
+
+func (x *GlobalFileInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_files_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GlobalFileInfo.ProtoReflect.Descriptor instead.
+func (*GlobalFileInfo) Descriptor() ([]byte, []int) {
+	return file_files_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *GlobalFileInfo) GetFileID() uint64 {
+	if x != nil {
+		return x.FileID
+	}
+	return 0
+}
+
+func (x *GlobalFileInfo) GetFileName() string {
+	if x != nil {
+		return x.FileName
+	}
+	return ""
+}
+
+func (x *GlobalFileInfo) GetFileSize() int64 {
+	if x != nil {
+		return x.FileSize
+	}
+	return 0
+}
+
+func (x *GlobalFileInfo) GetBucket() string {
+	if x != nil {
+		return x.Bucket
+	}
+	return ""
+}
+
+func (x *GlobalFileInfo) GetObjectName() string {
+	if x != nil {
+		return x.ObjectName
+	}
+	return ""
+}
+
+func (x *GlobalFileInfo) GetFileHash() string {
+	if x != nil {
+		return x.FileHash
+	}
+	return ""
+}
+
+func (x *GlobalFileInfo) GetUserID() uint64 {
+	if x != nil {
+		return x.UserID
+	}
+	return 0
+}
+
+func (x *GlobalFileInfo) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+func (x *GlobalFileInfo) GetUpdatedAt() string {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return ""
+}
+
 var File_files_proto protoreflect.FileDescriptor
 
 const file_files_proto_rawDesc = "" +
@@ -1009,7 +1289,31 @@ const file_files_proto_rawDesc = "" +
 	"\x11CheckFileResponse\x12\x16\n" +
 	"\x06FileID\x18\x01 \x01(\x04R\x06FileID\x12\x1c\n" +
 	"\tObjectUrl\x18\x02 \x01(\tR\tObjectUrl\x12\x16\n" +
-	"\x06exists\x18\x03 \x01(\bR\x06exists2\xe6\x02\n" +
+	"\x06exists\x18\x03 \x01(\bR\x06exists\"}\n" +
+	"\x17GlobalFileSearchRequest\x12\x1a\n" +
+	"\bFileName\x18\x01 \x01(\tR\bFileName\x12\x12\n" +
+	"\x04Page\x18\x02 \x01(\rR\x04Page\x12\x1a\n" +
+	"\bPageSize\x18\x03 \x01(\rR\bPageSize\x12\x16\n" +
+	"\x06Bucket\x18\x04 \x01(\tR\x06Bucket\"\xad\x01\n" +
+	"\x18GlobalFileSearchResponse\x12\x12\n" +
+	"\x04Code\x18\x01 \x01(\x03R\x04Code\x12\x10\n" +
+	"\x03Msg\x18\x02 \x01(\tR\x03Msg\x12%\n" +
+	"\x05Files\x18\x03 \x03(\v2\x0f.GlobalFileInfoR\x05Files\x12\x14\n" +
+	"\x05Total\x18\x04 \x01(\rR\x05Total\x12\x12\n" +
+	"\x04Page\x18\x05 \x01(\rR\x04Page\x12\x1a\n" +
+	"\bPageSize\x18\x06 \x01(\rR\bPageSize\"\x88\x02\n" +
+	"\x0eGlobalFileInfo\x12\x16\n" +
+	"\x06FileID\x18\x01 \x01(\x04R\x06FileID\x12\x1a\n" +
+	"\bFileName\x18\x02 \x01(\tR\bFileName\x12\x1a\n" +
+	"\bFileSize\x18\x03 \x01(\x03R\bFileSize\x12\x16\n" +
+	"\x06Bucket\x18\x04 \x01(\tR\x06Bucket\x12\x1e\n" +
+	"\n" +
+	"ObjectName\x18\x05 \x01(\tR\n" +
+	"ObjectName\x12\x1a\n" +
+	"\bFileHash\x18\x06 \x01(\tR\bFileHash\x12\x16\n" +
+	"\x06UserID\x18\a \x01(\x04R\x06UserID\x12\x1c\n" +
+	"\tCreatedAt\x18\b \x01(\tR\tCreatedAt\x12\x1c\n" +
+	"\tUpdatedAt\x18\t \x01(\tR\tUpdatedAt2\xb0\x05\n" +
 	"\fFilesService\x125\n" +
 	"\n" +
 	"FileUpload\x12\x12.FileUploadRequest\x1a\x13.FileUploadResponse\x12@\n" +
@@ -1018,7 +1322,12 @@ const file_files_proto_rawDesc = "" +
 	"FileDelete\x12\x12.FileDeleteRequest\x1a\x13.FileCommonResponse\x12/\n" +
 	"\bFileList\x12\x10.FileListRequest\x1a\x11.FileListResponse\x12;\n" +
 	"\fFileDownload\x12\x14.FileDownloadRequest\x1a\x15.FileDownloadResponse\x128\n" +
-	"\x0fCheckFileExists\x12\x11.CheckFileRequest\x1a\x12.CheckFileResponseB\bZ\x06files/b\x06proto3"
+	"\x0fCheckFileExists\x12\x11.CheckFileRequest\x1a\x12.CheckFileResponse\x12:\n" +
+	"\x0fQiniuFileUpload\x12\x12.FileUploadRequest\x1a\x13.FileUploadResponse\x12E\n" +
+	"\x12QiniuBigFileUpload\x12\x15.BigFileUploadRequest\x1a\x16.BigFileUploadResponse(\x01\x12@\n" +
+	"\x11QiniuFileDownload\x12\x14.FileDownloadRequest\x1a\x15.FileDownloadResponse\x12G\n" +
+	"\x10GlobalFileSearch\x12\x18.GlobalFileSearchRequest\x1a\x19.GlobalFileSearchResponse\x12:\n" +
+	"\x0fQiniuFileDelete\x12\x12.FileDeleteRequest\x1a\x13.FileCommonResponseB\bZ\x06files/b\x06proto3"
 
 var (
 	file_files_proto_rawDescOnce sync.Once
@@ -1032,41 +1341,55 @@ func file_files_proto_rawDescGZIP() []byte {
 	return file_files_proto_rawDescData
 }
 
-var file_files_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_files_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_files_proto_goTypes = []any{
-	(*FileModel)(nil),             // 0: FileModel
-	(*FileUploadRequest)(nil),     // 1: FileUploadRequest
-	(*FileUploadResponse)(nil),    // 2: FileUploadResponse
-	(*BigFileUploadRequest)(nil),  // 3: BigFileUploadRequest
-	(*BigFileUploadResponse)(nil), // 4: BigFileUploadResponse
-	(*FileDeleteRequest)(nil),     // 5: FileDeleteRequest
-	(*FileListRequest)(nil),       // 6: FileListRequest
-	(*FileListResponse)(nil),      // 7: FileListResponse
-	(*FileDownloadRequest)(nil),   // 8: FileDownloadRequest
-	(*FileDownloadResponse)(nil),  // 9: FileDownloadResponse
-	(*FileCommonResponse)(nil),    // 10: FileCommonResponse
-	(*CheckFileRequest)(nil),      // 11: CheckFileRequest
-	(*CheckFileResponse)(nil),     // 12: CheckFileResponse
+	(*FileModel)(nil),                // 0: FileModel
+	(*FileUploadRequest)(nil),        // 1: FileUploadRequest
+	(*FileUploadResponse)(nil),       // 2: FileUploadResponse
+	(*BigFileUploadRequest)(nil),     // 3: BigFileUploadRequest
+	(*BigFileUploadResponse)(nil),    // 4: BigFileUploadResponse
+	(*FileDeleteRequest)(nil),        // 5: FileDeleteRequest
+	(*FileListRequest)(nil),          // 6: FileListRequest
+	(*FileListResponse)(nil),         // 7: FileListResponse
+	(*FileDownloadRequest)(nil),      // 8: FileDownloadRequest
+	(*FileDownloadResponse)(nil),     // 9: FileDownloadResponse
+	(*FileCommonResponse)(nil),       // 10: FileCommonResponse
+	(*CheckFileRequest)(nil),         // 11: CheckFileRequest
+	(*CheckFileResponse)(nil),        // 12: CheckFileResponse
+	(*GlobalFileSearchRequest)(nil),  // 13: GlobalFileSearchRequest
+	(*GlobalFileSearchResponse)(nil), // 14: GlobalFileSearchResponse
+	(*GlobalFileInfo)(nil),           // 15: GlobalFileInfo
 }
 var file_files_proto_depIdxs = []int32{
 	0,  // 0: FileListResponse.Files:type_name -> FileModel
-	1,  // 1: FilesService.FileUpload:input_type -> FileUploadRequest
-	3,  // 2: FilesService.BigFileUpload:input_type -> BigFileUploadRequest
-	5,  // 3: FilesService.FileDelete:input_type -> FileDeleteRequest
-	6,  // 4: FilesService.FileList:input_type -> FileListRequest
-	8,  // 5: FilesService.FileDownload:input_type -> FileDownloadRequest
-	11, // 6: FilesService.CheckFileExists:input_type -> CheckFileRequest
-	2,  // 7: FilesService.FileUpload:output_type -> FileUploadResponse
-	4,  // 8: FilesService.BigFileUpload:output_type -> BigFileUploadResponse
-	10, // 9: FilesService.FileDelete:output_type -> FileCommonResponse
-	7,  // 10: FilesService.FileList:output_type -> FileListResponse
-	9,  // 11: FilesService.FileDownload:output_type -> FileDownloadResponse
-	12, // 12: FilesService.CheckFileExists:output_type -> CheckFileResponse
-	7,  // [7:13] is the sub-list for method output_type
-	1,  // [1:7] is the sub-list for method input_type
-	1,  // [1:1] is the sub-list for extension type_name
-	1,  // [1:1] is the sub-list for extension extendee
-	0,  // [0:1] is the sub-list for field type_name
+	15, // 1: GlobalFileSearchResponse.Files:type_name -> GlobalFileInfo
+	1,  // 2: FilesService.FileUpload:input_type -> FileUploadRequest
+	3,  // 3: FilesService.BigFileUpload:input_type -> BigFileUploadRequest
+	5,  // 4: FilesService.FileDelete:input_type -> FileDeleteRequest
+	6,  // 5: FilesService.FileList:input_type -> FileListRequest
+	8,  // 6: FilesService.FileDownload:input_type -> FileDownloadRequest
+	11, // 7: FilesService.CheckFileExists:input_type -> CheckFileRequest
+	1,  // 8: FilesService.QiniuFileUpload:input_type -> FileUploadRequest
+	3,  // 9: FilesService.QiniuBigFileUpload:input_type -> BigFileUploadRequest
+	8,  // 10: FilesService.QiniuFileDownload:input_type -> FileDownloadRequest
+	13, // 11: FilesService.GlobalFileSearch:input_type -> GlobalFileSearchRequest
+	5,  // 12: FilesService.QiniuFileDelete:input_type -> FileDeleteRequest
+	2,  // 13: FilesService.FileUpload:output_type -> FileUploadResponse
+	4,  // 14: FilesService.BigFileUpload:output_type -> BigFileUploadResponse
+	10, // 15: FilesService.FileDelete:output_type -> FileCommonResponse
+	7,  // 16: FilesService.FileList:output_type -> FileListResponse
+	9,  // 17: FilesService.FileDownload:output_type -> FileDownloadResponse
+	12, // 18: FilesService.CheckFileExists:output_type -> CheckFileResponse
+	2,  // 19: FilesService.QiniuFileUpload:output_type -> FileUploadResponse
+	4,  // 20: FilesService.QiniuBigFileUpload:output_type -> BigFileUploadResponse
+	9,  // 21: FilesService.QiniuFileDownload:output_type -> FileDownloadResponse
+	14, // 22: FilesService.GlobalFileSearch:output_type -> GlobalFileSearchResponse
+	10, // 23: FilesService.QiniuFileDelete:output_type -> FileCommonResponse
+	13, // [13:24] is the sub-list for method output_type
+	2,  // [2:13] is the sub-list for method input_type
+	2,  // [2:2] is the sub-list for extension type_name
+	2,  // [2:2] is the sub-list for extension extendee
+	0,  // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_files_proto_init() }
@@ -1080,7 +1403,7 @@ func file_files_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_files_proto_rawDesc), len(file_files_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   13,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

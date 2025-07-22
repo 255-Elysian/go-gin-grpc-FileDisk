@@ -1,0 +1,73 @@
+server:
+  port: ":4000"
+  version: "1.0"
+
+mysql:
+  driverName: "mysql"
+  host: "localhost"
+  port: "3306"
+  database: "grpc-todolist-disk"
+  username: "root"
+  password: "123456"
+  charset: "utf8mb4"
+
+redis:
+  username: "default"
+  address: "localhost:6379"
+  password: ""
+
+etcd:
+  Endpoints:
+    - "localhost:2379"
+
+services:
+  gateway:
+    name: "gateway"
+    loadBalance: "true"
+    addr:
+      - "127.0.0.1:10001"
+  user:
+    name: "user"
+    loadBalance: "false"
+    addr:
+      - "127.0.0.1:10002"
+  task:
+    name: "task"
+    loadBalance: "false"
+    addr:
+      - "127.0.0.1:10003"
+  files:
+    name: "files"
+    loadBalance: "false"
+    addr:
+      - "127.0.0.1:10004"
+
+domain:
+  user:
+    name: "user"
+  task:
+    name: "task"
+  files:
+    name: "files"
+
+token:
+  shortDuration: "30"   # token 有效期（分钟），多久无操作就退出
+  longDuration: "1440"  # 长 token，多久必须重新登陆
+
+# 七牛云配置
+qiniu:
+  accessKey: "your_qiniu_access_key"     # 替换为你的七牛云 AccessKey
+  secretKey: "your_qiniu_secret_key"     # 替换为你的七牛云 SecretKey  
+  bucket: "your_bucket_name"             # 替换为你的七牛云存储空间名称
+  domain: "your_domain.com"              # 替换为你的七牛云 CDN 域名
+  zone: "z0"                             # 存储区域 z0:华东 z1:华北 z2:华南 na0:北美 as0:东南亚
+
+kafka:
+  topic:
+    - "user_cache"
+    - "file_cache"
+  broker:
+    - "localhost:9092"
+  groupID:
+    - "user_group"
+    - "file_group"

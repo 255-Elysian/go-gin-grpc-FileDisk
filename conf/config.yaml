@@ -59,6 +59,13 @@ token:
   shortDuration: "30"   # token 有效期（分钟），多久无操作就退出
   longDuration: "1440"  # 长 token，多久必须重新登陆
 
+qiniu:
+  accessKey: "8RyS7NBshdfaXy26CwH2dGT8KNEwAvArQJ2Y4AWF"     # 七牛云 AccessKey
+  secretKey: "efYf1Kf10r3GJwaC46KWbkGiS1FjpMcengEwIHxI"     # 七牛云 SecretKey
+  bucket: "grpc-todolist-disk"       # 七牛云存储空间名称
+  domain: "szt3gjdvz.hn-bkt.clouddn.com"        # 七牛云 CDN 域名
+  zone: "z2"                       # 存储区域 z0:华东 z1:华北 z2:华南 na0:北美 as0:东南亚
+
 kafka:
   topic:
     - "user_cache"
