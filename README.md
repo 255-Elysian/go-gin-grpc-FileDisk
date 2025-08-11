@@ -80,7 +80,7 @@
 ### 📂 文件存储系统
 
 #### 上传方式
-- ✅ **表单上传** - 适用于小文件（< 100MB），支持批量上传
+- ✅ **表单上传** - 适用于小文件（< 10MB），支持批量上传
 - ✅ **流式上传** - 适用于大文件，1MB 分片，支持断点续传
 - ✅ **异步上传** - Kafka 队列处理，提升响应速度
 - ✅ **智能秒传** - SHA256 哈希检测，跨用户文件共享
@@ -99,14 +99,7 @@
 - **Docker**: 20.10+
 - **Docker Compose**: 2.0+
 
-### 1. 克隆项目
-
-```bash
-git clone https://github.com/your-username/grpc-todolist-disk.git
-cd grpc-todolist-disk
-```
-
-### 2. 启动基础设施
+### 启动基础设施
 
 使用 Docker Compose 一键启动所有依赖服务：
 
@@ -128,7 +121,7 @@ docker-compose logs -f
 - **Kafka** (端口: 9092) - 消息队列
 - **Zookeeper** (端口: 2181) - Kafka 协调服务
 
-### 3. 配置七牛云
+### 配置七牛云
 
 复制配置模板并填入你的七牛云信息：
 
@@ -147,14 +140,7 @@ qiniu:
   zone: "z0"                             # 存储区域
 ```
 
-### 4. 数据库初始化
-
-```bash
-# 自动创建数据库表结构
-go run scripts/init_db.go
-```
-
-### 5. 启动微服务
+### 启动微服务
 
 在不同终端中启动各个服务：
 
@@ -172,7 +158,7 @@ go run app/files/cmd/main.go
 go run app/gateway/cmd/main.go
 ```
 
-### 6. 验证部署
+### 验证部署
 
 访问健康检查接口：
 
@@ -182,87 +168,6 @@ curl http://localhost:4000/ping
 
 # 检查服务注册状态
 curl http://localhost:2379/v2/keys/services
-```
-
-## 📖 API 文档
-
-### 认证接口
-
-#### 用户注册
-```http
-POST /api/v1/user/register
-Content-Type: application/json
-
-{
-  "username": "testuser",
-  "password": "password123"
-}
-```
-
-#### 用户登录
-```http
-POST /api/v1/user/login
-Content-Type: application/json
-
-{
-  "username": "testuser",
-  "password": "password123"
-}
-```
-
-### 文件操作接口
-
-#### 七牛云表单上传
-```http
-POST /api/v1/qiniu_file_upload
-Authorization: Bearer <jwt_token>
-Content-Type: multipart/form-data
-
-file: <binary_file_data>
-```
-
-#### 全盘文件搜索
-```http
-GET /api/v1/global_file_search?file_name=test&page=1&page_size=10
-Authorization: Bearer <jwt_token>
-```
-
-#### 跨用户文件下载
-```http
-GET /api/v1/qiniu_file_download?file_id=123
-Authorization: Bearer <jwt_token>
-```
-
-#### 文件删除
-```http
-DELETE /api/v1/qiniu_file_delete
-Authorization: Bearer <jwt_token>
-Content-Type: application/json
-
-{
-  "file_id": 123
-}
-```
-
-### 备忘录接口
-
-#### 创建备忘录
-```http
-POST /api/v1/task
-Authorization: Bearer <jwt_token>
-Content-Type: application/json
-
-{
-  "title": "学习 Go 语言",
-  "content": "完成 gRPC 项目开发",
-  "status": 0
-}
-```
-
-#### 获取备忘录列表
-```http
-GET /api/v1/task?page=1&page_size=10
-Authorization: Bearer <jwt_token>
 ```
 
 ## 🧪 测试指南
@@ -315,7 +220,7 @@ chmod +x qiniu_delete_test.sh
 | ---------- | ------------- | ----------- | -------- | ------------------ |
 | 表单上传   | 小文件        | < 10MB      | 高       | 秒传、批量上传     |
 | 流式上传   | 大文件        | 无限制       | 中       | 分片、断点续传     |
-| 异步上传   | 批量处理      | < 100MB     | 极高     | 队列缓冲、重试机制 |
+| 异步上传   | 批量处理      | < 10MB     | 极高     | 队列缓冲、重试机制 |
 
 ### 秒传机制
 
@@ -482,13 +387,5 @@ chore: 构建过程或辅助工具的变动
 - [GORM](https://github.com/go-gorm/gorm) - Go ORM 库
 - [七牛云](https://www.qiniu.com/) - 对象存储服务
 - [Kafka](https://kafka.apache.org/) - 分布式消息队列
-
-## 📞 联系方式
-
-- **项目地址**: [GitHub Repository](https://github.com/your-username/grpc-todolist-disk)
-- **问题反馈**: [Issues](https://github.com/your-username/grpc-todolist-disk/issues)
-- **讨论交流**: [Discussions](https://github.com/your-username/grpc-todolist-disk/discussions)
-
----
 
 ⭐ 如果这个项目对你有帮助，请给个 Star 支持一下！
